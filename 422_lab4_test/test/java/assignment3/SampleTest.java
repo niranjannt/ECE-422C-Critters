@@ -1,21 +1,25 @@
 package assignment3;
 
 
+import org.junit.Test;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 
+import static org.junit.Assert.assertEquals;
+
 /*
 Recitation we will go over TTD and JUnitifying this
  */
-
 public class SampleTest {
 
 
 	private static String CLI_INTEGRATION_TESTS_INOUTS = "422_lab4_test/test/data/cli_integration_inouts/";
 	private static ByteArrayOutputStream outContent;
 
+	@Test
 	public void ParseCreateLargeCritter(){
 
 		String fileFolder = "create_large_critter";
@@ -33,8 +37,13 @@ public class SampleTest {
 		}
 		String text = cleanString(scanner.useDelimiter("\\A").next().trim());
 		String output = cleanString(outContent.toString());
+		assertEquals(text,output);
 		scanner.close();
 	}
+
+
+
+
 
 
 	String cleanString(String input) {
@@ -49,5 +58,10 @@ public class SampleTest {
 				.replaceAll("(?m)\\s+$", "") // Remove trailing spaces/tabs from each line
 				.trim();
 		return input;
+	}
+
+	@Test
+	public void TestMethod(){
+	System.out.println(2);
 	}
 }
