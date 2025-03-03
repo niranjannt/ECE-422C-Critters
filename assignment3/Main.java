@@ -7,6 +7,7 @@
  * Fall 2024
  */
 package assignment3; // cannot be in default package
+import java.util.List;
 import java.util.Scanner;
 import java.io.*;
 
@@ -18,12 +19,12 @@ import java.io.*;
  */
 public class Main {
 
-    static Scanner kb;	// scanner connected to keyboard input, or input file
-    private static String inputFile;	// input file, used instead of keyboard input if specified
-    static ByteArrayOutputStream testOutputString;	// if test specified, holds all console output
-    private static String myPackage;	// package of Critter file.  Critter cannot be in default pkg.
+    static Scanner kb;    // scanner connected to keyboard input, or input file
+    private static String inputFile;    // input file, used instead of keyboard input if specified
+    static ByteArrayOutputStream testOutputString;    // if test specified, holds all console output
+    private static String myPackage;    // package of Critter file.  Critter cannot be in default pkg.
     private static boolean DEBUG = false; // Use it or not, as you wish!
-    static PrintStream old = System.out;	// if you want to restore output to console
+    static PrintStream old = System.out;    // if you want to restore output to console
 
 
     // Gets the package name.  The usage assumes that Critter and its subclasses are all in the same package.
@@ -33,14 +34,15 @@ public class Main {
 
     /**
      * Main method.
-     * @param args args can be empty.  If not empty, provide two parameters -- the first is a file name, 
-     * and the second is test (for test output, where all output to be directed to a String), or nothing.
+     *
+     * @param args args can be empty.  If not empty, provide two parameters -- the first is a file name,
+     *             and the second is test (for test output, where all output to be directed to a String), or nothing.
      */
-    public static void main(String[] args) { 
+    public static void main(String[] args) {
         if (args.length != 0) {
             try {
                 inputFile = args[0];
-                kb = new Scanner(new File(inputFile));			
+                kb = new Scanner(new File(inputFile));
             } catch (FileNotFoundException e) {
                 System.out.println("USAGE: java Main OR java Main <input file> <test output>");
                 e.printStackTrace();
@@ -64,11 +66,181 @@ public class Main {
 
         /* Do not alter the code above for your submission. */
         /* Write your code below. */
-        
-        System.out.println("GLHF");
-        
-        /* Write your code above */
-        System.out.flush();
 
+        String in = "";
+        //While the command entered is not quit, keep running simulation
+        while (!in.equals("quit")) {
+            in = kb.nextLine();
+            //Split based off of whitespace
+            String[] command = in.split(" ");
+
+
+            if (command[0].equals("make")) {
+                if (command.length == 2) {
+                    try {
+                        Critter.makeCritter(command[1]);
+                    } catch (InvalidCritterException e) {
+                        System.out.print("error processing: ");
+                        for (String str : command) {
+                            System.out.print(str + " ");
+                        }
+                        System.out.println();
+
+                    }
+
+                } else if (command.length == 3) {
+                    try {
+                        int count = Integer.parseInt(command[2]);
+                        if (count <= 0) {
+                            System.out.print("error processing: ");
+                            for (String str : command) {
+                                System.out.print(str + " ");
+                            }
+                            System.out.println();
+
+
+                        }
+                        for (int i = 0; i < count; i++) {
+                            Critter.makeCritter(command[1]);
+                        }
+                    } catch (NumberFormatException | InvalidCritterException e) {
+                        System.out.print("error processing: ");
+                        for (String str : command) {
+                            System.out.print(str + " ");
+                        }
+                        System.out.println();
+                    }
+                }
+                else{
+                    System.out.print("error processing: ");
+
+                    for (String str : command) {
+                        System.out.print(str + " ");
+                    }
+                    System.out.println();
+
+                }
+                continue;
+            }
+            if (command[0].equals("seed")) {
+                if (command.length == 2) {
+                    try {
+                        int result = Integer.parseInt(command[1]);
+                        Critter.setSeed(result);
+                    } catch (NumberFormatException e) {
+                        System.out.print("error processing: ");
+                        for (String str : command) {
+                            System.out.print(str + " ");
+                        }
+                        System.out.println();
+
+                    }
+                } else {
+                    System.out.print("error processing: ");
+                    for (String str : command) {
+                        System.out.print(str + " ");
+                    }
+                    System.out.println();
+
+                }
+                continue;
+
+            }
+            if (command[0].equals("show")) {
+                if (command.length == 1) {
+                    Critter.displayWorld();
+                } else {
+                    System.out.print("error processing: ");
+                    for (String str : command) {
+                        System.out.print(str + " ");
+                    }
+                    System.out.println();
+
+
+                }
+                continue;
+            }
+            if (command[0].equals("step")) {
+                if (command.length == 1) {
+                    Critter.worldTimeStep();
+                } else if (command.length == 2) {
+                    try {
+                        int count = Integer.parseInt(command[1]);
+                        if (count <= 0) {
+                            System.out.print("error processing: ");
+                            for (String str : command) {
+                                System.out.print(str + " ");
+                            }
+                            System.out.println();
+
+                        }
+                        for (int i = 0; i < count; i++) {
+                            Critter.worldTimeStep();
+                        }
+                    } catch (NumberFormatException e) {
+                        System.out.print("error processing: ");
+                        for (String str : command) {
+                            System.out.print(str + " ");
+                        }
+                        System.out.println();
+
+                    }
+                } else {
+                    System.out.print("error processing: ");
+                    for (String str : command) {
+                        System.out.print(str + " ");
+                    }
+                    System.out.println();
+
+                }
+                continue;
+
+            }
+            if(command[0].equals("stats")) {
+                try {
+                    if (command.length == 2) {
+                        List<Critter> critter=Critter.getInstances(command[1]);
+                        Critter.runStats(critter);
+
+                    }
+                    else{
+                        System.out.print("error processing: ");
+                        for (String str : command) {
+                            System.out.print(str + " ");
+                        }
+                        System.out.println();
+
+                    }
+
+                }
+                catch(InvalidCritterException e){
+                    System.out.print("error processing: ");
+                    for (String str : command) {
+                        System.out.print(str + " ");
+                    }
+                    System.out.println();
+
+                }
+                continue;
+            }
+            if (command[0].equals("quit") && command.length == 1) {
+                break;
+            } else {
+                System.out.print("invalid command: ");
+                for (String str : command) {
+                    System.out.print(str+" ");
+
+                }
+                System.out.println();
+
+            }
+
+
+
+            /* Write your code above */
+            System.out.flush();
+
+        }
     }
 }
+

@@ -9,7 +9,7 @@ public class MyCritter1 extends Critter.TestCritter {
 
     @Override
     public void doTimeStep() {
-        walk(0);
+        walk(2);
     }
 
     @Override
