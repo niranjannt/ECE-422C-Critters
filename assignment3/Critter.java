@@ -310,11 +310,7 @@ public abstract class Critter {
 
 	}
 	private static void removeDeadCritters(){
-		for(Critter critter: population){
-			if(critter.energy<=0){
-				population.remove(critter);
-			}
-		}
+		population.removeIf(critter -> critter.energy <= 0);
 
 	}
 //Tested
