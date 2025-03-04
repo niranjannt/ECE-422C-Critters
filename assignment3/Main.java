@@ -7,6 +7,7 @@
  * Fall 2024
  */
 package assignment3; // cannot be in default package
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Scanner;
 import java.io.*;
@@ -200,8 +201,18 @@ public class Main {
             if(command[0].equals("stats")) {
                 try {
                     if (command.length == 2) {
-                        List<Critter> critter=Critter.getInstances(command[1]);
-                        Critter.runStats(critter);
+                      String className=command[1];
+                        className="assignment3."+className;
+                        try {
+                            Class<?> critterClass = Class.forName(className);
+                            List<Critter> crittersList=Critter.getInstances(command[1]);
+                            java.lang.reflect.Method method = critterClass.getMethod("runStats", java.util.List.class);
+                            method.invoke(null, crittersList); // Null because it's a static method
+                        } catch (NoSuchMethodException | ClassNotFoundException | IllegalAccessException |
+                                 InvocationTargetException e) {
+                            List<Critter> critter=Critter.getInstances(command[1]);
+                            Critter.runStats(critter);
+                        }
 
                     }
                     else{
