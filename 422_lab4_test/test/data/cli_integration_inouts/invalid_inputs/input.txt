@@ -1,0 +1,3 @@
+dontcountme
+throw error
+quit
