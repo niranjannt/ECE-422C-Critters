@@ -133,7 +133,9 @@ public class TestStage1 {
         }
     }
 
-    @Test
+
+    @Test(timeout=1000)
+
     public void FightFight() throws InvalidCritterException {
         // Create two Critters that return fight/fight
         //Checks energy makes sense afterwards
