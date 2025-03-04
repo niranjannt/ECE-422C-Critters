@@ -234,7 +234,7 @@ public abstract class Critter {
 		}
 
 
-		removeDeadCritters();
+		//removeDeadCritters();
 
 		for (int i = 0; i < population.size(); i++) {
 			Critter critter1 = population.get(i);
@@ -261,11 +261,11 @@ public abstract class Critter {
 						}
 						if(rollb>rolla){
 							critter2.energy+= (critter1.getEnergy()/2);
-							population.remove(critter1);
+							critter1.energy=0;
 						}
 						else if(rolla>rollb){
 							critter1.energy+=(critter2.getEnergy()/2);
-							population.remove(critter2);
+							critter2.energy=0;
 
 
 						}
@@ -273,12 +273,12 @@ public abstract class Critter {
 							int random=getRandomInt(2);
 							if(random==0){
 								critter1.energy+=(critter2.getEnergy()/2);
-								population.remove(critter2);
+								critter2.energy=0;
 
 							}
 							else{
 								critter2.energy+= (critter1.getEnergy()/2);
-								population.remove(critter1);
+								critter1.energy=0;
 
 							}
 						}
@@ -313,7 +313,6 @@ public abstract class Critter {
 		population.removeIf(critter -> critter.energy <= 0);
 
 	}
-//Tested
 	public static void displayWorld() {
 		char[][] grid = new char[Params.world_height][Params.world_width];
 		for (char[] row : grid) java.util.Arrays.fill(row, ' ');

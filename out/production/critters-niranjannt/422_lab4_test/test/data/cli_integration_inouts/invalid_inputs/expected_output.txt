@@ -1,0 +1,2 @@
+invalid command: dontcountme
+invalid command: throw error
