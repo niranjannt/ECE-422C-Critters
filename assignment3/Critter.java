@@ -1,8 +1,8 @@
 /* CRITTERS Critter.java
  * ECE422C Project 3 submission by
  * Replace <...> with your actual data.
- * <Student Name>
- * <Student EID>
+ *Niranjan Telkikar
+ * nnt479
  * Slip days used: <0>
  * Fall 2024
  */
@@ -18,6 +18,9 @@ import java.util.List;
  */
 /*Initial commit*/
 
+/**
+ * This critter class holds all of the population and baby lists of Critters
+ */
 public abstract class Critter {
 	private static String myPackage;
 	private	static List<Critter> population = new java.util.ArrayList<Critter>();
@@ -47,16 +50,32 @@ public abstract class Critter {
 	private int x_coord;
 	private int y_coord;
 
+	/**
+	 * This function makes the critter walk one step in the specified direction
+	 * @param direction
+	 */
 	protected final void walk(int direction) {
 		move(direction, 1, Params.walk_energy_cost);
 
 	}
 
+	/**
+	 * This function makes the critter move 2 steps which is run.
+	 * @param direction
+	 */
 	protected final void run(int direction) {
 		move(direction, 2, Params.run_energy_cost);
 
 	}
 
+	/**
+	 * This function first checks if the energy is still>energyCost and if it is it continues and subtracts the energy cost.
+	 * After that based on the direction specified, the x-coordinate is updated. For example, if the direction is specified as 0, which means to move right dx[0] is dx is 1 and y is 0 as y is
+	 * not supposed to change. Note that it is mmultiplied by the number of steps and added to x-coord and divided by Params.world_width to account for the torus grid.
+	 * @param direction
+	 * @param steps
+	 * @param energyCost
+	 */
 	private void move(int direction, int steps, int energyCost) {
 		if (energy < energyCost) return;
 		energy -= energyCost;
@@ -66,8 +85,15 @@ public abstract class Critter {
 		y_coord = (y_coord + dy[direction] * steps + Params.world_height) % Params.world_height;
 	}
 
+	/**
+	 * This function reproduces a critter and creates its babies! First, if this.energy is not greater than or equal to the minimum reproduce energy, then the function returns.
+	 * Otherwise, the energy of the offspring is cut in half and the energy of the parent is halved (but rounded up).
+	 * The offspring's coordinates are set in a similar way to the move function. The ycoord is added to the direction dx and world_width. After that the remainder of that sum and Params.world_width is used for the coordinates
+	 * Lastly, the offspring are added to the list of babies.
+	 * @param offspring
+	 * @param direction
+	 */
 	protected final void reproduce(Critter offspring, int direction) {
-		// The parent splits its energy equally with the offspring
 		if(!(this.energy>=Params.min_reproduce_energy)){
 			return;
 		}
@@ -95,13 +121,17 @@ public abstract class Critter {
 	 * (Java weirdness: Exception throwing does not work properly if the parameter has lower-case instead of
 	 * upper. For example, if craig is supplied instead of Craig, an error is thrown instead of
 	 * an Exception.)
+	 * Firstly, the class of the critter is extracted using the forName method by combining myPackage with the critter_class_name.
+	 * A new instance of Critter is created.
+	 * A random x coord is assigned to critter
+	 * A random y coord is assigned to critter
+	 * The critter's energy is set as Params.start_energy
+	 * The critter is added to the population of Critters.
+	 * If the critter class is not found, InvalidCritterException is invoked.
 	 * @param critter_class_name
 	 * @throws InvalidCritterException
 	 */
 	public static void makeCritter(String critter_class_name) throws InvalidCritterException {
-		if (critter_class_name.length() != 0 && Character.isLowerCase(critter_class_name.charAt(0))){
-			throw new InvalidCritterException(critter_class_name);
-		}
 		try {
 			Class critterClass = Class.forName(myPackage + '.' + critter_class_name);
 			Critter critter = (Critter) critterClass.newInstance();
@@ -117,9 +147,14 @@ public abstract class Critter {
 	}
 
 	/**
-	 * Gets a list of critters of a specific type.
+	 * Gets a list of critters of a specific type if it exists
+	 * 1. First the critterClass is extracted from myPackage+"."+critter_class_name"
+	 * 2. In the population of critters, if it is part of critterClass it is added to the results list (instances of that specific Critter class)
+	 * 3. The list is returned
+	 * 4. An exception is returned if the class does not exist.
 	 * @param critter_class_name What kind of Critter is to be listed.  Unqualified class name.
 	 * @return List of Critters.
+	 *
 	 * @throws InvalidCritterException
 	 */
 	public static List<Critter> getInstances(String critter_class_name) throws InvalidCritterException {
@@ -138,10 +173,7 @@ public abstract class Critter {
 	}
 
 
-	/**
-	 * Prints out how many Critters of each type there are on the board.
-	 * @param critters List of Critters.
-	 */
+
 	/**
 	 * Prints out how many Critters of each type there are on the board.
 	 * @param critters List of Critters.
@@ -221,13 +253,30 @@ public abstract class Critter {
 
 	/**
 	 * Clear the world of all critters, dead and alive
+	 * The list of population and babies are cleared using the clear method
 	 */
 	public static void clearWorld() {
 		population.clear();
 		babies.clear();
 	}
 
-
+	/**
+	 * The worldTimeStep does all of the necessary things as per the document.
+	 * 1. First for the population of critters, each individual critter does their own timestep
+	 * 2. Then encounters are resolved, if there are two critters at the same position.
+	 * 3. First the fight method is invoked for both critters to see which one wants to fight.
+	 * 4. If true is returned, the Critter wants to fight
+	 * 5. If the critters wants to fight a random number is rolled for a critter called rolla.
+	 * 6. The same thing is done for the other critter.
+	 * 7. If rolla>rollb then 1/2 of critter2's energy is given to critter1 and critter1's energy is set to zero
+	 * 8. If rollb>rolla then 1/2 of critter1's energy is given to critter1 and critter2's energy is set to zero
+	 * 9. If rolla=rollb the winner is selected randomly.
+	 * 10. Params.restenergycost is subtracted from the energy of the critters
+	 * 11. New algae are created, with random x and y coords given, and energy set to Params.start_energy. The critters are then added to the population list
+	 * 12. All of the babies are added to the population
+	 * 13. The list of babies is cleared
+	 * 14. The dead critters are removed from the population.
+	 */
 	public static void worldTimeStep() {
 		for(Critter critter :population){
 			critter.doTimeStep();
@@ -313,6 +362,15 @@ public abstract class Critter {
 		population.removeIf(critter -> critter.energy <= 0);
 
 	}
+
+	/**
+	 * A two-dimension grid array is created to display the world with the Params.world_height and Params.world_width
+	 * For each row in the grid, teh array is filled with space
+	 * Then, the grid is filled with the critters using the toString method (so characters) representing one critter with many different types
+	 * The top boundary is printed.
+	 * The minus sides are printed at the side
+	 * The bottom boundary is printed.
+	 */
 	public static void displayWorld() {
 		char[][] grid = new char[Params.world_height][Params.world_width];
 		for (char[] row : grid) java.util.Arrays.fill(row, ' ');

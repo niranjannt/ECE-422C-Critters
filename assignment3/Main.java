@@ -1,11 +1,12 @@
-/* CRITTERS Main.java
+/* CRITTERS <MyClass.java>
  * ECE422C Project 3 submission by
  * Replace <...> with your actual data.
- * <Student Name>
- * <Student EID>
+ * Niranjan Telkikar
+ * nnt479
  * Slip days used: <0>
  * Fall 2024
  */
+
 package assignment3; // cannot be in default package
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
@@ -17,6 +18,10 @@ import java.io.*;
  * Usage: java <pkgname>.Main <input file> test
  * input file is optional.  If input file is specified, the word 'test' is optional.
  * May not use 'test' argument without specifying input file.
+ */
+
+/**
+ * This sets up the output
  */
 public class Main {
 
@@ -35,7 +40,7 @@ public class Main {
 
     /**
      * Main method.
-     *
+     * The main method invokes the methods based on the commands typed in.
      * @param args args can be empty.  If not empty, provide two parameters -- the first is a file name,
      *             and the second is test (for test output, where all output to be directed to a String), or nothing.
      */
@@ -72,17 +77,17 @@ public class Main {
         String in = "";
         //While the command entered is not quit, keep running simulation
         while (!in.equals("quit")) {
-            in = kb.nextLine();
+            in = kb.nextLine();//Gets a line from the keyboard
             //Split based off of whitespace
-            String[] command = in.split(" ");
+            String[] command = in.split(" "); //The line is split by spaces
 
 
-            if (command[0].equals("make")) {
+            if (command[0].equals("make")) { //Checks if the first command is make
                 if (command.length == 2) {
                     try {
-                        Critter.makeCritter(command[1]);
+                        Critter.makeCritter(command[1]); //makes the Critter with name if it only one
                     } catch (InvalidCritterException e) {
-                        System.out.print("error processing: ");
+                        System.out.print("error processing: "); //catches InvaludCritter if Critter does not exist
                         for (String str : command) {
                             System.out.print(str + " ");
                         }
@@ -92,8 +97,8 @@ public class Main {
 
                 } else if (command.length == 3) {
                     try {
-                        int count = Integer.parseInt(command[2]);
-                        if (count <= 0) {
+                        int count = Integer.parseInt(command[2]); //gets the number of critters if >=1
+                        if (count <= 0) { //If it is less than or equal to zero, there is an error.
                             System.out.print("error processing: ");
                             for (String str : command) {
                                 System.out.print(str + " ");
@@ -102,9 +107,11 @@ public class Main {
 
 
                         }
+                        //Makes the number of critters needed
                         for (int i = 0; i < count; i++) {
                             Critter.makeCritter(command[1]);
                         }
+                        //If it is invalid critter there is an error
                     } catch (NumberFormatException | InvalidCritterException e) {
                         System.out.print("error processing: ");
                         for (String str : command) {
@@ -128,7 +135,7 @@ public class Main {
                 if (command.length == 2) {
                     try {
                         int result = Integer.parseInt(command[1]);
-                        Critter.setSeed(result);
+                        Critter.setSeed(result); //This sets the seed for this using the number
                     } catch (NumberFormatException e) {
                         System.out.print("error processing: ");
                         for (String str : command) {
@@ -150,7 +157,7 @@ public class Main {
             }
             if (command[0].equals("show")) {
                 if (command.length == 1) {
-                    Critter.displayWorld();
+                    Critter.displayWorld(); //displays the world with show command
                 } else {
                     System.out.print("error processing: ");
                     for (String str : command) {
@@ -164,7 +171,7 @@ public class Main {
             }
             if (command[0].equals("step")) {
                 if (command.length == 1) {
-                    Critter.worldTimeStep();
+                    Critter.worldTimeStep(); //if step only one step is counted
                 } else if (command.length == 2) {
                     try {
                         int count = Integer.parseInt(command[1]);
@@ -177,7 +184,7 @@ public class Main {
 
                         }
                         for (int i = 0; i < count; i++) {
-                            Critter.worldTimeStep();
+                            Critter.worldTimeStep(); //otherwise worldTimeStep is done
                         }
                     } catch (NumberFormatException e) {
                         System.out.print("error processing: ");
@@ -202,23 +209,23 @@ public class Main {
                 try {
                     if (command.length == 2) {
                       String className=command[1];
-                        className="assignment3."+className;
+                        className="assignment3."+className; //gets classname by adding assignment3. since it is imported as a package
                         try {
-                            Class<?> critterClass = Class.forName(className);
-                            List<Critter> crittersList=Critter.getInstances(command[1]);
-                            java.lang.reflect.Method method = critterClass.getMethod("runStats", java.util.List.class);
+                            Class<?> critterClass = Class.forName(className); //gets the name of the class (ex. Craig)
+                            List<Critter> crittersList=Critter.getInstances(command[1]); //gets all instances of that Class
+                            java.lang.reflect.Method method = critterClass.getMethod("runStats", java.util.List.class); //gets the method runStats inside that class
                             method.invoke(null, crittersList); // Null because it's a static method
                         } catch (NoSuchMethodException | ClassNotFoundException | IllegalAccessException |
                                  InvocationTargetException e) {
-                            List<Critter> critter=Critter.getInstances(command[1]);
-                            Critter.runStats(critter);
+                            List<Critter> critter=Critter.getInstances(command[1]); //If there is no method it runs normally
+                            Critter.runStats(critter); //This is running normally
                         }
 
                     }
                     else{
                         System.out.print("error processing: ");
                         for (String str : command) {
-                            System.out.print(str + " ");
+                            System.out.print(str + " "); //Otherwise error processing is printed
                         }
                         System.out.println();
 
@@ -228,7 +235,7 @@ public class Main {
                 catch(InvalidCritterException e){
                     System.out.print("error processing: ");
                     for (String str : command) {
-                        System.out.print(str + " ");
+                        System.out.print(str + " "); //otherwise error is printed
                     }
                     System.out.println();
 
@@ -236,9 +243,9 @@ public class Main {
                 continue;
             }
             if (command[0].equals("quit") && command.length == 1) {
-                break;
+                break; //If it is quit the while loop breaks and then the program ends
             } else {
-                System.out.print("invalid command: ");
+                System.out.print("invalid command: "); //otherwise it is an invalid command
                 for (String str : command) {
                     System.out.print(str+" ");
 
