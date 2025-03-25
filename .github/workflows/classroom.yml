@@ -67,6 +67,60 @@ jobs:
         command: java -cp out:junit-4.13.2.jar:hamcrest-core-1.3.jar assignment3.RunSpecificTestMethod assignment3.TestStage1 FightFight
         timeout: 10
         max-score: 10
+        
+    - name: Run Test 5
+      id: test5
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: Test Method 5
+        command: java -cp out:junit-4.13.2.jar:hamcrest-core-1.3.jar assignment3.RunSpecificTestMethod assignment3.TestStage1 ParseErrors
+        timeout: 10
+        max-score: 10
+        
+    - name: Run Test 6
+      id: test6
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: Test Method 6
+        command: java -cp out:junit-4.13.2.jar:hamcrest-core-1.3.jar assignment3.RunSpecificTestMethod assignment3.TestStage1 testWalk
+        timeout: 10
+        max-score: 10
+        
+    - name: Run Test 7
+      id: test7
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: Test Method 7
+        command: java -cp out:junit-4.13.2.jar:hamcrest-core-1.3.jar assignment3.RunSpecificTestMethod assignment3.TestStage1 NoFightNoFight
+        timeout: 10
+        max-score: 10
+        
+    - name: Run Test 8
+      id: test8
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: Test Method 8
+        command: java -cp out:junit-4.13.2.jar:hamcrest-core-1.3.jar assignment3.RunSpecificTestMethod assignment3.TestStage1 AlgaeGenerationTest
+        timeout: 10
+        max-score: 10
+        
+    - name: Run Test 9
+      id: test9
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: Test Method 9
+        command: java -cp out:junit-4.13.2.jar:hamcrest-core-1.3.jar assignment3.RunSpecificTestMethod assignment3.TestStage1 ReproduceTest
+        timeout: 10
+        max-score: 10
+        
+    - name: Run Test 10
+      id: test10
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: Test Method 10
+        command: java -cp out:junit-4.13.2.jar:hamcrest-core-1.3.jar assignment3.RunSpecificTestMethod assignment3.TestStage1 ReproduceTestTimeStep
+        timeout: 10
+        max-score: 10
 
 
     - name: Autograding Reporter
@@ -76,6 +130,13 @@ jobs:
         TEST2_RESULTS: "${{steps.test2.outputs.result}}"
         TEST3_RESULTS: "${{steps.test3.outputs.result}}"
         TEST4_RESULTS: "${{steps.test4.outputs.result}}"
+        TEST5_RESULTS: "${{steps.test5.outputs.result}}"
+        TEST6_RESULTS: "${{steps.test6.outputs.result}}"
+        TEST7_RESULTS: "${{steps.test7.outputs.result}}"
+        TEST8_RESULTS: "${{steps.test8.outputs.result}}"
+        TEST9_RESULTS: "${{steps.test9.outputs.result}}"
+        TEST10_RESULTS: "${{steps.test10.outputs.result}}"
+        
       with:
-        runners: test1,test2, test3, test4
+        runners: test1,test2, test3, test4, test5, test6, test7, test8, test9, test10
 
