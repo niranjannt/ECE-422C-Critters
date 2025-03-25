@@ -64,7 +64,7 @@ public class TestStage1 {
      * 1. ParseInvalidInput
      */
     @Test(timeout=1000)
-    public void ParseInvalidInput(){
+    public void ParseInvalidInput() throws InvalidCritterException{
 
         //Test: ParseInvalidInput
         //Test for Invalid Inputs
@@ -92,7 +92,7 @@ public class TestStage1 {
 
 
     @Test(timeout=1000)
-    public void ParseErrors(){
+    public void ParseErrors() throws InvalidCritterException{
 
         /*
          * Test: ParseErrors
