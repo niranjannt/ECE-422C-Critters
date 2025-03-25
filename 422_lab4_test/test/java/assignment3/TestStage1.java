@@ -61,7 +61,7 @@ public class TestStage1 {
 
 
     /*
-     * 2. ParseInvalidInput
+     * 1. ParseInvalidInput
      */
     @Test(timeout=1000)
     public void ParseInvalidInput(){
@@ -90,8 +90,52 @@ public class TestStage1 {
         assertEquals(text,output);
     }
 
+
+    @Test(timeout=1000)
+    public void ParseErrors(){
+
+        /*
+         * Test: ParseErrors
+         * Test for errors within valid inputs
+         * Expects errors to be printed
+         */
+
+        String fileFolder = "error_processing";
+        String[] inputs = {CLI_INTEGRATION_TESTS_INOUTS + fileFolder + "/input.txt" ,"test"};
+
+        Main.main(inputs);
+        outContent = Main.testOutputString;
+
+        Scanner scanner = null;
+        try {
+            scanner = new Scanner( new File(CLI_INTEGRATION_TESTS_INOUTS + fileFolder + "/expected_output.txt") );
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        String text = cleanString(scanner.useDelimiter("\\A").next().trim());
+        String output = cleanString(outContent.toString());
+        scanner.close();
+        assertEquals(text,output);
+    }
+
     /**
-     * 3.
+     *
+     * Walk in one direction.
+     * @throws InvalidCritterException
+     */
+    @Test(timeout=1000)
+    public void testWalk() throws InvalidCritterException {
+        Critter.makeCritter("MyCritter1");
+        MyCritter1 m1 = (MyCritter1) TestCritter.getPopulation().get(0);
+        int x1a = m1.getX_coord(); int y1a = m1.getY_coord();
+        m1.doTimeStep();
+        int x1b = m1.getX_coord(); int y1b = m1.getY_coord();
+        assertTrue((x1b - x1a == 1) || (x1b + Params.world_width - x1a) == 1);
+        assertTrue(Math.abs(y1b - y1a) == 0);
+    }
+
+    /**
+     *
      * Walk in multiple directions, in sequence.  Check location only.
      * @throws InvalidCritterException
      */
@@ -122,6 +166,7 @@ public class TestStage1 {
      * Stays still for every turn.  Check energy drop at every turn.
      */
     public void RestEnergyTest () throws InvalidCritterException {  // rest until death
+        Params.refresh_algae_count = 0;
         Critter.makeCritter("MyCritter6");
         MyCritter6 c = (MyCritter6) Critter.TestCritter.getPopulation().get(0);
         int step = 0;
@@ -157,6 +202,94 @@ public class TestStage1 {
         MyCritter7 loser = c1.getEnergy() <= 0 ? c1 : c2;
         int afterEnergy = Params.start_energy * 3 / 2 - Params.rest_energy_cost;
         assertEquals(afterEnergy, winner.getEnergy());
+    }
+
+    @Test(timeout=1000)
+    public void NoFightNoFight() throws InvalidCritterException {
+
+        int x = 0;
+        int y = 0;
+        Point p = new Point(x, y);
+        Critter.makeCritter("Algae");
+        Critter.makeCritter("Algae");
+        Algae c1 = (Algae) Critter.getInstances("Algae").get(0);
+        Algae c2 = (Algae) Critter.getInstances("Algae").get(1);
+        c1.setX_coord(x);
+        c1.setY_coord(y);
+        c2.setX_coord(x);
+        c2.setY_coord(y);
+
+        Critter.worldTimeStep();
+
+        // assertEquals(1, TestCritter.getPop().get(p).size());
+        assertEquals(2, TestCritter.getPopulation().size());
+        Algae winner = c1.getEnergy() <= 0 ? c2 : c1;
+        Algae loser = c1.getEnergy() <= 0 ? c1 : c2;
+        // Algae winner = c1.isDead() ? c2 : c1;
+        // Algae loser = c1.isDead() ? c1 : c2;
+        int afterEnergy = (Params.start_energy + Params.photosynthesis_energy_amount) * 3 / 2 - Params.rest_energy_cost;
+        assertEquals(afterEnergy, winner.getEnergy());
+    }
+
+    @Test(timeout=1000)
+    /**
+     * 14. Check Algae generation.
+     */
+    public void AlgaeGenerationTest() throws InvalidCritterException {
+        // Make sure that the rate of Algae generation is correct, by counting
+        // Critters
+        // after each time step.
+        Params.refresh_algae_count = 3;
+        Params.rest_energy_cost = 0;
+        int numAlgaeExpected = Critter.getInstances("Algae").size() + Params.refresh_algae_count;
+        Critter.worldTimeStep();
+        int numAlgaeActual = Critter.getInstances("Algae").size();
+        assertEquals(numAlgaeExpected, numAlgaeActual);
+    }
+
+    @Test(timeout=1000)
+    /**
+     * Checks that babies are not immediately added to the population and that
+     * the babies move in the right direction
+     */
+    public void ReproduceTest() throws InvalidCritterException {
+        int x = 0, y = 0, dir = 5;
+        Critter.makeCritter("MyCritter7");
+        MyCritter7 parent = (MyCritter7) Critter.getInstances("MyCritter7").get(0);
+        parent.setX_coord(x);
+        parent.setY_coord(y);
+
+        MyCritter7 offspring = new MyCritter7();
+        parent.reproduce(offspring, dir);
+
+        assertEquals(1, Critter.getInstances("MyCritter7").size());
+        assertTrue(TestCritter.getBabies().contains(offspring));
+
+        int[] childXY = moveStep(x, y, dir, 1);
+        assertEquals(childXY[0], offspring.getX_coord());
+        assertEquals(childXY[1], offspring.getY_coord());
+    }
+
+    @Test(timeout=1000)
+    /**
+     * Checks that the babies are added to the population by the end of the time
+     * step
+     */
+    public void ReproduceTestTimeStep() throws InvalidCritterException {
+        int x = 0, y = 0;
+        Critter.worldTimeStep();
+        TestCritter.clearWorld();
+        Critter.makeCritter("MyCritter7");
+        MyCritter7 parent = (MyCritter7) Critter.getInstances("MyCritter7").get(0);
+        parent.setX_coord(x);
+        parent.setY_coord(y);
+
+        Critter.worldTimeStep();
+
+        // assertEquals(2, Critter.getInstances("MyCritter7").size());
+        assertEquals(2, TestCritter.getPopulation().size());
+        assertTrue(TestCritter.getBabies().isEmpty());
+
     }
 
 
